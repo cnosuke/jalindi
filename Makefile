@@ -29,3 +29,9 @@ endif
 
 deps: glide
 	glide install -v
+
+gen-proto:
+	mkdir -p pb/ && protoc \
+		-I proto/ \
+		--go_out=plugins=grpc:pb/ \
+		proto/*.proto

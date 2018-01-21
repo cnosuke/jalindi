@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package jalindi;
+
+import "google/protobuf/timestamp.proto";
+
+service JalindiService {
+    rpc PostEvent (PostEventRequest) returns (PostEventResponse) {}
+    rpc PostEventList (PostEventListRequest) returns (PostEventListResponse) {}
+}
+
+message PostEventRequest {
+    Event event = 3;
+    Client client = 4;
+    string browser_uuid = 1;
+    string request_uuid = 2;
+    string user_agent = 5;
+    string referer = 6;
+}
+
+message PostEventResponse {}
+
+message PostEventListRequest {
+    repeated Event event = 3;
+    Client client = 4;
+    string browser_uuid = 1;
+    string request_uuid = 2;
+    string user_agent = 5;
+    string referer = 6;
+}
+
+message PostEventListResponse {}
+
+message Event {
+    google.protobuf.Timestamp timestamp = 1;
+    string type = 2;
+    string group = 3;
+    string action = 4;
+    int64 amount = 5;
+}
+
+message Client {
+    string name = 1;
+    string version = 2;
+    string platform = 3;
+    string platform_version = 4;
+    string device_name = 5;
+    bool experiment = 6;
+}

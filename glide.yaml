@@ -1,0 +1,14 @@
+package: github.com/cnosuke/jalindi
+import:
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
+  - ptypes/timestamp
+- package: github.com/k0kubun/pp
+  version: ^2.3.0
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: google.golang.org/grpc
+  version: ^1.9.2
+- package: github.com/lestrrat/go-fluent-client

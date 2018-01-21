@@ -21,7 +21,7 @@ message PostEventRequest {
 message PostEventResponse {}
 
 message PostEventListRequest {
-    repeated Event event = 3;
+    repeated Event events = 3;
     Client client = 4;
     string browser_uuid = 1;
     string request_uuid = 2;

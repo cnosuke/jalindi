@@ -26,6 +26,8 @@ func NewHandler(fl *fluent.Buffered, tag string, logger *zap.SugaredLogger) *han
 }
 
 func (h *handler) PostEvent(ctx context.Context, req *jalindi.PostEventRequest) (res *jalindi.PostEventResponse, err error) {
+	h.logger.Infow("PostEvent", "request", req)
+
 	err = h.post(
 		req.Event,
 		req.Client,
@@ -36,7 +38,7 @@ func (h *handler) PostEvent(ctx context.Context, req *jalindi.PostEventRequest) 
 	)
 
 	if err != nil {
-		h.logger.Errorw("Post failed",
+		h.logger.Errorw("PostEvent failed",
 			"error", err,
 			"event", req.Event,
 			"client", req.Client,
@@ -53,6 +55,8 @@ func (h *handler) PostEvent(ctx context.Context, req *jalindi.PostEventRequest) 
 }
 
 func (h *handler) PostEventList(ctx context.Context, req *jalindi.PostEventListRequest) (res *jalindi.PostEventListResponse, err error) {
+	h.logger.Infow("PostEventList", "request", req)
+
 	for _, ev := range req.Events {
 		err = h.post(
 			ev,
@@ -64,7 +68,7 @@ func (h *handler) PostEventList(ctx context.Context, req *jalindi.PostEventListR
 		)
 
 		if err != nil {
-			h.logger.Errorw("PostList failed",
+			h.logger.Errorw("PostEventList failed",
 				"error", err,
 				"event", ev,
 				"client", req.Client,

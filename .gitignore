@@ -16,3 +16,5 @@
 .idea/
 vendor/
 bin/
+_sample/
+dist/

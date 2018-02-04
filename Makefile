@@ -22,13 +22,13 @@ release-pack: cross-build
 		zip -j dist/$$os-amd64.zip dist/$$os-amd64/$(NAME); \
 	done
 
-glide:
-ifeq ($(shell command -v glide 2> /dev/null),)
-	curl https://glide.sh/get | sh
+dep:
+ifeq ($(shell command -v dep 2> /dev/null),)
+	go install -v github.com/golang/dep/cmd/de
 endif
 
-deps: glide
-	glide install -v
+deps: dep
+	dep ensure -v
 
 gen-proto:
 	mkdir -p pb/ && protoc \

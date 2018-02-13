@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -175,6 +176,16 @@ func main() {
 		)
 
 		reflection.Register(svr)
+
+		go func() {
+			bytesRevision := []byte(Revision)
+
+			http.HandleFunc("/site/sha", func(w http.ResponseWriter, r *http.Request) {
+				w.Write(bytesRevision)
+			})
+			logger.Infof("Starting health check on port=8080")
+			http.ListenAndServe("0.0.0.0:8080", nil)
+		}()
 
 		logger.Infow("Starting server",
 			"binding", binding,

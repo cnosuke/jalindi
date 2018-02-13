@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/cnosuke/jalindi/pb"
 	"github.com/lestrrat/go-fluent-client"
@@ -115,15 +119,53 @@ func main() {
 
 		svr := grpc.NewServer(grpcServerOptions...)
 
+		if len(fluentdAddr) == 0 {
+			return cli.NewExitError("--fluentd should be set.", 1)
+		}
+
 		fl, err := fluent.NewBuffered(
 			fluent.WithConnectOnStart(true),
 			fluent.WithAddress(fluentdAddr),
 			fluent.WithWriteThreshold(10*1024),
 		)
+
 		if err != nil {
 			logger.Errorf("Building up fluentd client failed: %v", err)
 			return cli.NewExitError("", 1)
 		}
+
+		defer func() {
+			logger.Infof("Closing fluentd")
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+
+			if err := fl.Shutdown(ctx); err != nil {
+				logger.Errorf("Closing fluentd Error: %v", err)
+				fl.Close()
+			}
+		}()
+
+		signalChan := make(chan os.Signal, 1)
+		signal.Notify(signalChan,
+			syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT,
+		)
+		go func() {
+			s := <-signalChan
+
+			logger.Infof("Closing fluentd: %v", s)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			if err := fl.Shutdown(ctx); err != nil {
+				logger.Errorf("Closing fluentd Error: %v", err)
+				fl.Close()
+			}
+
+			os.Exit(0)
+		}()
 
 		handler := NewHandler(fl, fluentdTag, logger)
 

@@ -3,10 +3,22 @@ syntax = "proto3";
 package jalindi;
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 service JalindiService {
-    rpc PostEvent (PostEventRequest) returns (PostEventResponse) {}
-    rpc PostEventList (PostEventListRequest) returns (PostEventListResponse) {}
+    rpc PostEvent (PostEventRequest) returns (PostEventResponse) {
+        option (google.api.http) = {
+        post: "/api/v1/event"
+        body: "*"
+      };
+    }
+
+    rpc PostEventList (PostEventListRequest) returns (PostEventListResponse) {
+        option (google.api.http) = {
+        post: "/api/v1/event_list"
+        body: "*"
+      };
+    }
 }
 
 message PostEventRequest {
